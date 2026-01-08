@@ -1,43 +1,52 @@
-# Mintlify Starter Kit
+# UptimeKit Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+This repository contains the official documentation for [UptimeKit](https://github.com/uptimekit/uptimekit), an open-source, modern, and powerful status page and monitoring solution.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+The documentation is built using [Mintlify](https://mintlify.com) and is hosted at [docs.uptimekit.io](https://docs.uptimekit.io).
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## 🚀 Development
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+To preview the documentation locally, you need to install the [Mintlify CLI](https://www.npmjs.com/package/mint).
 
-## Development
+### Prerequisites
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+- [Node.js](https://nodejs.org/) (version 18 or higher)
+- [npm](https://www.npmjs.com/)
 
-```
+### Installation
+
+```bash
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Local Preview
 
-```
+Run the following command at the root of this repository:
+
+```bash
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+The documentation will be available at `http://localhost:3000`.
 
-## Publishing changes
+## � Structure
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- `docs.json`: Configuration for the documentation (navigation, theme, etc.).
+- `index.mdx`: The homepage of the documentation.
+- `installation/`: Guides for setting up the dashboard and workers.
+- `configuration/`: Detailed configuration options.
+- `integrations/`: Documentation for third-party integrations (Discord, Telegram, etc.).
+- `logo/`: Brand assets.
+- `snippets/`: Reusable MDX components.
 
-## Need help?
+## 🤝 Contributing
 
-### Troubleshooting
+We welcome contributions to the documentation! If you find a typo, outdated information, or want to add a new guide:
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+1. Fork the repository.
+2. Create a new branch for your changes.
+3. Submit a Pull Request with a clear description of your improvements.
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+## 📄 License
+
+The documentation is licensed under the MIT License. See `LICENSE` for more information.
