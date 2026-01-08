@@ -78,5 +78,11 @@
     "socials": {
       "github": "https://github.com/uptimekit"
     }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_5Sv1zHGfyKVQKfyw4UDa4t5LTfY1pvQBN1Wvke3XUyp",
+      "sessionRecording": false
+    }
   }
 }
