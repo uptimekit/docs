@@ -38,17 +38,27 @@ Before you begin, ensure you have the following installed on your server or loca
     BETTER_AUTH_URL=http://localhost:3000
     NEXT_PUBLIC_URL=http://localhost:3000
 
+    # Status Page Configuration (Optional)
+    NEXT_PUBLIC_STATUS_PAGE_DOMAIN=status.example.com
+    STATUS_PAGE_ACCESS_SECRET=  # Optional, uses BETTER_AUTH_SECRET as fallback
+
     # Optional ports to be exposed
     DASH_PORT=3000
     STATUS_PAGE_PORT=3001
     ```
 
     <Info>
-      To generate a secure secret, you can use the following command:
+      To generate secure secrets, you can use the following command:
 
       ```bash
       openssl rand -base64 32
       ```
+
+      `BETTER_AUTH_SECRET` is required. `STATUS_PAGE_ACCESS_SECRET` is optional and will use `BETTER_AUTH_SECRET` as a fallback if not set.
+    </Info>
+
+    <Info>
+      For more details on configuring custom domains and password-protected status pages, see the [Status Pages Configuration](/configuration/status_pages) guide.
     </Info>
   </Step>
 

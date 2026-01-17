@@ -1,0 +1,579 @@
+---
+title: 'Monitor Types'
+description: 'Comprehensive guide to all monitoring methods and protocols supported by UptimeKit'
+icon: 'radar'
+---
+
+UptimeKit supports multiple monitoring protocols to help you track the availability and performance of your services. This guide covers all available monitor types, how they work, and when to use each one.
+
+## Overview
+
+UptimeKit provides **5 monitoring methods**:
+
+| Monitor Type | Protocol | Use Case |
+|--------------|----------|----------|
+| **HTTP/HTTPS** | HTTP/HTTPS requests | Monitor websites, APIs, and web services |
+| **TCP** | TCP socket connection | Check if specific ports are open and accepting connections |
+| **Ping (ICMP)** | ICMP echo requests | Test basic network connectivity and reachability |
+| **Keyword** | HTTP with content search | Verify specific content appears in responses |
+| **HTTP JSON** | HTTP with JSON validation | Validate API responses with JSONPath expressions |
+
+## HTTP/HTTPS Monitor
+
+Monitor websites and APIs by making HTTP/HTTPS requests and validating response codes.
+
+### How It Works
+
+The HTTP monitor performs a complete HTTP request to your endpoint and measures:
+- Response time and detailed timing breakdown
+- HTTP status code
+- SSL/TLS certificate information (for HTTPS)
+- Redirect handling (follows up to 10 redirects automatically)
+
+### Configuration
+
+When creating an HTTP monitor, you can configure:
+
+- **URL** (required): Full URL including protocol (`https://example.com/api/health`)
+- **Method**: HTTP method (GET, POST, PUT, DELETE, etc.) - defaults to GET
+- **Timeout**: Request timeout in seconds (default: 30 seconds)
+- **Accepted Status Codes**: Comma-separated codes or ranges (e.g., `200-299,301,302`)
+- **Headers**: Custom HTTP headers (Authorization, Content-Type, etc.)
+- **Body**: Request body for POST/PUT requests
+
+### Timing Breakdown
+
+HTTP monitors provide detailed timing information:
+
+- **DNS Lookup**: Time to resolve domain name to IP address
+- **TCP Connect**: Time to establish TCP connection
+- **TLS Handshake**: Time for SSL/TLS negotiation (HTTPS only)
+- **Time to First Byte (TTFB)**: Time until first response byte received
+- **Transfer**: Time to download response body
+- **Total**: Complete request duration
+
+<Info>
+  These timing metrics help identify performance bottlenecks in your infrastructure - whether it's DNS, network latency, SSL overhead, or server processing time.
+</Info>
+
+### SSL Certificate Tracking
+
+For HTTPS URLs, UptimeKit automatically:
+- Extracts certificate information (issuer, expiration date)
+- Calculates days until expiry
+- Sends notifications at 30, 14, 7, and 1 days before expiration
+- Displays certificate status in the dashboard
+
+### Success/Failure Criteria
+
+- **Success (Up)**: Response status code matches accepted status codes
+- **Failure (Down)**: Status code outside accepted range, timeout, or connection error
+
+### Default Accepted Status Codes
+
+If not specified, HTTP monitors accept `200-299` (all 2xx success codes).
+
+### Example Use Cases
+
+```
+Monitor API health endpoint:
+  URL: https://api.example.com/health
+  Method: GET
+  Accepted Status Codes: 200
+
+Monitor API with authentication:
+  URL: https://api.example.com/v1/status
+  Method: GET
+  Headers: {"Authorization": "Bearer token123"}
+  Accepted Status Codes: 200,201
+
+Check website allows redirects:
+  URL: https://example.com
+  Method: GET
+  Accepted Status Codes: 200-299,301,302
+```
+
+<Info>
+  All HTTP-based monitors send a User-Agent header: `UptimeKit-Worker/1.0 (+https://uptimekit.dev)`
+</Info>
+
+## TCP Monitor
+
+Check if a specific TCP port is open and accepting connections.
+
+### How It Works
+
+The TCP monitor attempts to establish a TCP connection to a specified hostname and port. This verifies that:
+- The host is reachable
+- The port is open
+- A service is listening on that port
+
+No data is sent after connection - it's purely a connectivity test.
+
+### Configuration
+
+- **Hostname** (required): Target hostname or IP address
+- **Port** (required): Port number (1-65535)
+- **Timeout**: Connection timeout in seconds (default: 30 seconds)
+
+### Success/Failure Criteria
+
+- **Success (Up)**: TCP connection established within timeout period
+- **Failure (Down)**: Connection refused, timeout, or invalid hostname/port
+
+### Example Use Cases
+
+```
+Monitor SSH server:
+  Hostname: server.example.com
+  Port: 22
+
+Monitor SMTP mail server:
+  Hostname: mail.example.com
+  Port: 25
+
+Monitor Redis database:
+  Hostname: redis.internal
+  Port: 6379
+
+Monitor PostgreSQL database:
+  Hostname: db.example.com
+  Port: 5432
+
+Monitor custom application:
+  Hostname: 192.168.1.100
+  Port: 8080
+```
+
+<Info>
+  TCP monitors are lightweight and fast - perfect for checking if services are listening without making full protocol requests.
+</Info>
+
+### Common Ports Reference
+
+| Service | Default Port |
+|---------|--------------|
+| SSH | 22 |
+| SMTP | 25 |
+| DNS | 53 |
+| HTTP | 80 |
+| HTTPS | 443 |
+| SMTP (TLS) | 587 |
+| MySQL | 3306 |
+| PostgreSQL | 5432 |
+| Redis | 6379 |
+| MongoDB | 27017 |
+
+## Ping (ICMP) Monitor
+
+Test basic network connectivity using ICMP echo requests (ping).
+
+### How It Works
+
+The ping monitor sends 3 ICMP echo request packets to the target host and measures:
+- Whether the host responds
+- Average round-trip time (RTT)
+
+This is the most basic connectivity test - it verifies the host is reachable on the network.
+
+### Configuration
+
+- **Hostname** (required): Target hostname or IP address
+- **Timeout**: Total timeout in seconds (default: 10 seconds)
+
+### Platform Requirements
+
+<Warning>
+  **Windows Users**: The UptimeKit worker must run with Administrator privileges to send ICMP packets. On Linux and macOS, no special privileges are required.
+</Warning>
+
+If the worker runs on Windows without Administrator rights, ping monitors will fail with an error message indicating the permission issue.
+
+### Success/Failure Criteria
+
+- **Success (Up)**: At least 1 reply received from 3 ICMP requests
+- **Failure (Down)**: No replies received, timeout, or ICMP blocked
+
+### Example Use Cases
+
+```
+Monitor server connectivity:
+  Hostname: server.example.com
+
+Monitor gateway:
+  Hostname: 192.168.1.1
+
+Monitor DNS server:
+  Hostname: 8.8.8.8
+
+Check ISP connection:
+  Hostname: 1.1.1.1
+```
+
+<Info>
+  Ping monitors are useful for verifying basic network connectivity before checking application-level services. They're also helpful for monitoring network devices like routers and switches.
+</Info>
+
+### When Ping May Not Work
+
+- ICMP may be blocked by firewalls
+- Some cloud providers disable ICMP responses
+- Network security policies may filter ICMP packets
+- Consider using TCP monitoring as an alternative
+
+## Keyword Monitor
+
+Verify that specific text appears in HTTP response content.
+
+### How It Works
+
+The keyword monitor:
+1. Makes an HTTP request to the specified URL
+2. Checks that the status code is 2xx (200-299)
+3. Searches the response body for the specified keyword (case-sensitive)
+
+This is useful for monitoring endpoints that return status information in their content.
+
+### Configuration
+
+- **URL** (required): Full URL to check
+- **Keyword** (required): Text to search for (case-sensitive)
+- **Method**: HTTP method (default: GET)
+- **Timeout**: Request timeout in seconds (default: 30 seconds)
+- **Headers**: Custom HTTP headers
+- **Body**: Request body for POST/PUT requests
+
+### Success/Failure Criteria
+
+- **Success (Up)**: HTTP status is 2xx **AND** keyword found in response body
+- **Failure (Down)**: Non-2xx status OR keyword not found OR request error
+
+<Warning>
+  Keyword matching is **case-sensitive**. "Success" and "success" are treated as different keywords.
+</Warning>
+
+### Example Use Cases
+
+```
+Check API returns success status:
+  URL: https://api.example.com/health
+  Keyword: "healthy"
+
+Verify status page shows operational:
+  URL: https://status.example.com
+  Keyword: "All Systems Operational"
+
+Monitor service health endpoint:
+  URL: https://service.internal/status
+  Keyword: "UP"
+
+Check custom application response:
+  URL: https://app.example.com/api/ping
+  Keyword: "pong"
+```
+
+### Best Practices
+
+- Use unique, specific keywords to avoid false positives
+- Choose keywords that only appear when the service is truly healthy
+- Consider using HTTP JSON monitors for structured responses
+- Test your keyword manually first to ensure it appears as expected
+
+<Info>
+  Keyword monitors are perfect for legacy systems or third-party services that don't provide structured health check APIs.
+</Info>
+
+## HTTP JSON Monitor
+
+Validate API responses using JSONPath expressions with boolean logic.
+
+### How It Works
+
+The HTTP JSON monitor:
+1. Makes an HTTP request to the specified URL
+2. Checks that the status code is 2xx (200-299)
+3. Parses the response as JSON
+4. Evaluates a JSONPath expression against the JSON data
+5. Requires the expression to evaluate to `true`
+
+This provides powerful, flexible validation of structured API responses.
+
+### Configuration
+
+- **URL** (required): Full URL to check
+- **JSONPath Expression** (required): Boolean expression using JSONPath syntax
+- **Method**: HTTP method (default: GET)
+- **Timeout**: Request timeout in seconds (default: 30 seconds)
+- **Headers**: Custom HTTP headers
+- **Body**: Request body for POST/PUT requests
+
+### JSONPath Expression Syntax
+
+JSONPath expressions support:
+
+| Feature | Syntax | Example |
+|---------|--------|---------|
+| Field access | `$.field` | `$.status` |
+| Nested fields | `$.field.subfield` | `$.data.user.name` |
+| Array indexing | `$[0]` | `$.items[0].value` |
+| Comparisons | `==`, `!=`, `>`, `<`, `>=`, `<=` | `$.count > 0` |
+| Logical operators | `&&`, `||` | `$.status == "ok" && $.errors == 0` |
+
+### Success/Failure Criteria
+
+- **Success (Up)**: HTTP status is 2xx **AND** JSONPath expression evaluates to `true`
+- **Failure (Down)**: Non-2xx status OR expression evaluates to `false` OR invalid JSON OR expression error
+
+### Example Expressions
+
+**Simple status check:**
+```
+$.status == "healthy"
+```
+
+For response:
+```json
+{
+  "status": "healthy",
+  "uptime": 99.99
+}
+```
+Result: ✓ True (Up)
+
+---
+
+**Numeric comparison:**
+```
+$.response_time < 500
+```
+
+For response:
+```json
+{
+  "response_time": 245,
+  "requests": 1523
+}
+```
+Result: ✓ True (Up)
+
+---
+
+**Multiple conditions:**
+```
+$.status == "up" && $.database_connected == true
+```
+
+For response:
+```json
+{
+  "status": "up",
+  "database_connected": true,
+  "cache_connected": true
+}
+```
+Result: ✓ True (Up)
+
+---
+
+**Array value check:**
+```
+$[0].active == true
+```
+
+For response:
+```json
+[
+  {
+    "active": true,
+    "name": "service-1"
+  }
+]
+```
+Result: ✓ True (Up)
+
+---
+
+**Complex nested check:**
+```
+$.data.health.service == "running" && $.data.health.errors == 0
+```
+
+For response:
+```json
+{
+  "data": {
+    "health": {
+      "service": "running",
+      "errors": 0
+    }
+  }
+}
+```
+Result: ✓ True (Up)
+
+### Example Use Cases
+
+```
+Monitor API health endpoint:
+  URL: https://api.example.com/health
+  JSONPath: $.status == "healthy"
+
+Check database connection:
+  URL: https://api.example.com/status
+  JSONPath: $.db_connected == true && $.cache_connected == true
+
+Validate response time:
+  URL: https://api.example.com/metrics
+  JSONPath: $.avg_response_ms < 1000
+
+Monitor error rate:
+  URL: https://api.example.com/stats
+  JSONPath: $.error_rate < 0.01
+
+Check service array status:
+  URL: https://api.example.com/services
+  JSONPath: $[0].status == "operational"
+
+Complex health check:
+  URL: https://api.example.com/v2/health
+  JSONPath: $.status == "ok" && $.cpu_usage < 80 && $.memory_usage < 90
+```
+
+<Info>
+  HTTP JSON monitors are ideal for modern APIs that return structured health check responses. They provide much more flexibility than simple keyword matching.
+</Info>
+
+### Troubleshooting
+
+If your JSON monitor is failing:
+
+1. **Verify JSON is valid**: Use a JSON validator on the response
+2. **Test expression**: Extract your JSONPath expression and test it manually
+3. **Check field names**: Ensure field names match exactly (case-sensitive)
+4. **Verify data types**: Compare numbers with numbers, strings with strings
+5. **Use string quotes**: String values need quotes: `$.status == "ok"` not `$.status == ok`
+
+## Choosing the Right Monitor Type
+
+Use this decision tree to select the appropriate monitor:
+
+1. **Need to monitor a website or API?**
+   - Use **HTTP/HTTPS** monitor
+
+2. **Need to verify specific content in responses?**
+   - Structured JSON response → Use **HTTP JSON** monitor
+   - Simple text/keyword → Use **Keyword** monitor
+
+3. **Need to check if a port is open?**
+   - Use **TCP** monitor
+
+4. **Need to test basic network connectivity?**
+   - Use **Ping (ICMP)** monitor
+
+### Monitor Type Comparison
+
+| Feature | HTTP | TCP | Ping | Keyword | HTTP JSON |
+|---------|------|-----|------|---------|-----------|
+| Checks connectivity | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Validates status codes | ✓ | - | - | ✓ | ✓ |
+| SSL certificate tracking | ✓ | - | - | - | - |
+| Content validation | - | - | - | ✓ | ✓ |
+| Structured data validation | - | - | - | - | ✓ |
+| Timing breakdown | ✓ | - | - | - | - |
+| Lightweight | - | ✓ | ✓ | - | - |
+| Custom headers/auth | ✓ | - | - | ✓ | ✓ |
+
+## Default Timeouts
+
+| Monitor Type | Default Timeout |
+|--------------|-----------------|
+| HTTP/HTTPS | 30 seconds |
+| TCP | 30 seconds |
+| Ping (ICMP) | 10 seconds |
+| Keyword | 30 seconds |
+| HTTP JSON | 30 seconds |
+
+<Info>
+  Timeouts can be customized for each monitor individually when creating or editing the monitor in the dashboard.
+</Info>
+
+## Common Patterns
+
+### API Monitoring Strategy
+
+For comprehensive API monitoring, consider using multiple monitor types:
+
+1. **TCP Monitor** - Verify the port is open (fast, lightweight check)
+2. **HTTP Monitor** - Verify the API responds with valid status codes
+3. **HTTP JSON Monitor** - Validate detailed health status from response
+
+This layered approach helps you quickly identify whether issues are network-related, application-level, or data-related.
+
+### Infrastructure Monitoring
+
+For servers and infrastructure:
+
+1. **Ping Monitor** - Basic connectivity test
+2. **TCP Monitor** - Verify each service port (SSH, database, etc.)
+3. **HTTP Monitor** - Check web services and admin panels
+
+### Third-Party Service Monitoring
+
+When monitoring external services:
+
+1. **HTTP Monitor** - Primary availability check
+2. **Keyword Monitor** - Verify status page shows "operational" or similar
+3. **HTTP JSON Monitor** - Validate API health endpoints (if available)
+
+## Performance Considerations
+
+- **Ping monitors** are fastest (simple ICMP packets)
+- **TCP monitors** are very fast (single connection attempt)
+- **HTTP monitors** are moderate (full HTTP transaction)
+- **Keyword monitors** require downloading and parsing response body
+- **HTTP JSON monitors** require downloading, parsing JSON, and evaluating expressions
+
+For high-frequency monitoring (short intervals), prefer lighter monitor types where appropriate.
+
+## Security Notes
+
+### Credentials and Headers
+
+When monitors require authentication:
+- Use **Headers** field to add `Authorization` headers
+- Store API keys securely
+- Consider using environment-specific credentials
+
+### SSL/TLS Verification
+
+- HTTP monitors validate SSL certificates by default
+- Invalid certificates will cause monitors to fail (this is expected security behavior)
+- Certificate warnings indicate potential security issues
+
+<Warning>
+  Never disable SSL verification in production environments. If certificates are invalid, fix the certificates rather than bypassing validation.
+</Warning>
+
+## Troubleshooting
+
+### Monitor Always Shows Down
+
+1. **Check URL/hostname**: Verify it's correct and accessible
+2. **Test timeout**: Increase timeout if service is slow to respond
+3. **Verify accepted status codes**: Ensure expected codes are included
+4. **Check headers/auth**: Verify authentication is configured correctly
+5. **Review error messages**: Check monitor history for specific error details
+
+### Intermittent Failures
+
+1. **Service instability**: Check if service itself is unstable
+2. **Network issues**: Test from multiple locations if possible
+3. **Timeout too short**: Increase timeout for slow services
+4. **Rate limiting**: Some services may rate-limit requests
+
+### False Positives
+
+1. **Keyword changed**: Service changed response format
+2. **JSONPath incorrect**: Expression no longer matches response structure
+3. **Status codes changed**: Service now returns different codes
+4. **Content changed**: Response content no longer contains expected keyword

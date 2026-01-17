@@ -31,7 +31,16 @@
             "group": "Configuration",
             "pages": [
               "configuration/social_login",
-              "configuration/worker"
+              "configuration/worker",
+              "configuration/status_pages"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/monitor-types",
+              "features/monitors",
+              "features/incidents"
             ]
           },
           {
@@ -40,7 +49,8 @@
               "integrations/index",
               "integrations/discord",
               "integrations/telegram",
-              "integrations/webhook"
+              "integrations/webhook",
+              "integrations/prometheus"
             ]
           }
         ]
