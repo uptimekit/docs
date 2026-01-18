@@ -54,6 +54,18 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Contributing",
+        "groups": [
+          {
+            "group": "Development",
+            "pages": [
+              "contributing/index",
+              "contributing/theme-development"
+            ]
+          }
+        ]
       }
     ],
     "global": {
@@ -68,7 +80,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:contact@uptimekit.com"
+        "href": "mailto:contact@uptimekit.dev"
       }
     ]
   },
