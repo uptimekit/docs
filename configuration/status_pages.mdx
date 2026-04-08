@@ -1,7 +1,7 @@
 ---
-title: 'Status Pages'
-description: 'Configure custom domains, slug routing, and password protection for your status pages'
-icon: 'globe'
+title: "Status Pages"
+description: "Configure custom domains, slug routing, and password protection for your status pages"
+icon: "globe"
 ---
 
 UptimeKit allows you to create beautiful, customizable status pages to keep your users informed about service status. This guide covers advanced status page configuration including custom domains, slug-based routing, and password protection.
@@ -22,20 +22,18 @@ You can host your status pages on a custom domain by configuring the `NEXT_PUBLI
 
     Replace `status.example.com` with your desired status page domain.
   </Step>
-
   <Step title="Configure DNS">
     Point your custom domain to your UptimeKit installation:
 
     - Add an A record pointing to your server's IP address, or
     - Add a CNAME record pointing to your UptimeKit domain
   </Step>
-
   <Step title="Restart Application">
     Restart your UptimeKit instance to apply the changes:
 
     ```bash
-    docker-compose down
-    docker-compose up -d
+    docker compose down
+    docker compose up -d
     ```
   </Step>
 </Steps>
@@ -52,7 +50,7 @@ Each status page can have a unique slug that makes it accessible via a clean URL
 
 When you create or edit a status page, you can set a custom slug in the status page settings. The slug will be used in the URL:
 
-```
+```text
 https://status.example.com/your-slug
 ```
 
@@ -93,14 +91,12 @@ You can make status pages private by enabling password protection. This is usefu
       ```
     </Info>
   </Step>
-
   <Step title="Enable Protection in Dashboard">
     1. Navigate to your status page settings
     2. Toggle the "Make private" option
     3. Set a password for the status page
     4. Save your changes
   </Step>
-
   <Step title="Access Protected Page">
     When users visit your status page, they'll be prompted to enter the password. After successful authentication, they'll have access for 24 hours via a secure session token.
   </Step>
@@ -111,7 +107,7 @@ You can make status pages private by enabling password protection. This is usefu
 Password-protected status pages include several security features:
 
 | Feature | Description |
-|---------|-------------|
+| --- | --- |
 | Argon2id Hashing | Passwords are hashed using Argon2id, a modern password hashing algorithm resistant to GPU and side-channel attacks |
 | Session Tokens | Users receive a 24-hour session token after successful authentication |
 | Rate Limiting | Built-in protection against brute-force attacks |

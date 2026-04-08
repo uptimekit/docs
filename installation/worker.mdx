@@ -1,7 +1,7 @@
 ---
-title: 'Worker Installation'
-description: 'How to install and deploy the UptimeKit worker'
-icon: 'server'
+title: "Worker Installation"
+description: "How to install and deploy the UptimeKit worker"
+icon: "server"
 ---
 
 ## Prerequisites
@@ -29,13 +29,12 @@ Before you begin, ensure you have the following installed on your server or loca
     DASHBOARD_URL=http://localhost:3000
     ```
   </Step>
-
   <Step title="Add to Docker Compose">
     You can append the worker service to your existing `docker-compose.yml` file used for the dashboard. Add the following service definition:
 
     ```yaml
     worker:
-      image: uptimekit/worker:latest
+      image: ghcr.io/uptimekit/worker:latest
       restart: always
       env_file: .env
     ```
@@ -44,20 +43,18 @@ Before you begin, ensure you have the following installed on your server or loca
       If you are running the worker on a separate server, you will need to set up a full `docker-compose.yml` similar to the dashboard installation, but only running the worker service.
     </Info>
   </Step>
-
   <Step title="Start the Worker">
     Update your stack to include the new worker service:
 
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
   </Step>
-
   <Step title="Verify Worker Status">
     Check the logs to ensure the worker is processing jobs:
 
     ```bash
-    docker-compose logs -f worker
+    docker compose logs -f worker
     ```
   </Step>
 </Steps>

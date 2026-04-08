@@ -1,7 +1,7 @@
 ---
-title: 'Dashboard Installation'
-description: 'How to install and deploy the UptimeKit dashboard using Docker Compose'
-icon: 'download'
+title: "Dashboard Installation"
+description: "How to install and deploy the UptimeKit dashboard using Docker Compose"
+icon: "download"
 ---
 
 ## Prerequisites
@@ -23,7 +23,6 @@ Before you begin, ensure you have the following installed on your server or loca
     cd uptimekit
     ```
   </Step>
-
   <Step title="Configure Environment Variables">
     Create a copy of the example environment file:
 
@@ -37,11 +36,11 @@ Before you begin, ensure you have the following installed on your server or loca
     BETTER_AUTH_SECRET=change_me_to_a_secure_secret
     BETTER_AUTH_URL=http://localhost:3000
     NEXT_PUBLIC_URL=http://localhost:3000
-
+    
     # Status Page Configuration (Optional)
     NEXT_PUBLIC_STATUS_PAGE_DOMAIN=status.example.com
     STATUS_PAGE_ACCESS_SECRET=  # Optional, uses BETTER_AUTH_SECRET as fallback
-
+    
     # Optional ports to be exposed
     DASH_PORT=3000
     STATUS_PAGE_PORT=3001
@@ -61,15 +60,13 @@ Before you begin, ensure you have the following installed on your server or loca
       For more details on configuring custom domains and password-protected status pages, see the [Status Pages Configuration](/configuration/status_pages) guide.
     </Info>
   </Step>
-
   <Step title="Start with Docker Compose">
     Run the following command to build and start the application in detached mode:
 
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
   </Step>
-
   <Step title="Verify Installation">
     Once the containers are running, you can access the dashboard at:
 
@@ -78,7 +75,7 @@ Before you begin, ensure you have the following installed on your server or loca
     To check the logs and ensure everything is running smoothly:
 
     ```bash
-    docker-compose logs -f
+    docker compose logs -f
     ```
   </Step>
 </Steps>
@@ -89,6 +86,6 @@ To update to the latest version, pull the latest changes from git and restart th
 
 ```bash
 git pull origin main
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 ```
