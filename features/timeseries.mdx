@@ -17,7 +17,7 @@ Choose the backend with the `TIMESERIES_BACKEND` environment variable.
 
 ## TimescaleDB
 
-TimescaleDB can use your main application database or a separate database.
+TimescaleDB can use your main application database or a separate database since its just a PostgreSQL extension.
 
 ### Main Database
 
@@ -65,7 +65,7 @@ CLICKHOUSE_PASSWORD=
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `TIMESERIES_BACKEND` | Yes | Use `timescale` or `clickhouse` |
+| `TIMESERIES_BACKEND` | No | Use `timescale` or `clickhouse` defaults to `timescale` |
 | `DATABASE_URL` | Yes | Main PostgreSQL database URL |
 | `TIMESCALE_DATABASE_URL` | No | Optional TimescaleDB URL for time-series data |
 | `CLICKHOUSE_URL` | For ClickHouse | ClickHouse HTTP endpoint |
