@@ -1,28 +1,36 @@
 ---
-title: "Time-series Storage"
-description: "Configure TimescaleDB or ClickHouse for monitor events and uptime history."
+title: 'Time-series Storage'
+description: 'Configure TimescaleDB or ClickHouse for monitor events and uptime history'
+icon: 'database'
 ---
 
-UptimeKit stores monitor events, status changes, and latency history in a time-series backend.
+UptimeKit stores monitor events, status changes, and latency history in a time-series backend. You can use TimescaleDB with PostgreSQL or ClickHouse as a separate database.
 
-You can use either TimescaleDB or ClickHouse. Configure the backend with `TIMESERIES_BACKEND`.
+## Overview
+
+UptimeKit supports two time-series backends:
+
+- **TimescaleDB**: Store time-series data in PostgreSQL with the TimescaleDB extension
+- **ClickHouse**: Store time-series data in a dedicated ClickHouse database
+
+Choose the backend with the `TIMESERIES_BACKEND` environment variable.
 
 ## TimescaleDB
 
-Use TimescaleDB when you want to store time-series data in PostgreSQL.
+TimescaleDB can use your main application database or a separate database.
 
-```bash
-TIMESERIES_BACKEND=timescale
-```
+### Main Database
 
-By default, TimescaleDB reuses the main application database from `DATABASE_URL`.
+If your main PostgreSQL database has the TimescaleDB extension available, UptimeKit can reuse `DATABASE_URL`.
 
 ```bash
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
 TIMESERIES_BACKEND=timescale
 ```
 
-You can also store time-series data in a separate TimescaleDB database by setting `TIMESCALE_DATABASE_URL`.
+### Separate Database
+
+If you want time-series data in a different TimescaleDB database, set `TIMESCALE_DATABASE_URL`.
 
 ```bash
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
@@ -30,11 +38,17 @@ TIMESERIES_BACKEND=timescale
 TIMESCALE_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit_timeseries
 ```
 
-The PostgreSQL database used for time-series data must have the TimescaleDB extension available.
+<Info>
+  If `TIMESCALE_DATABASE_URL` is not set, UptimeKit uses `DATABASE_URL` for TimescaleDB.
+</Info>
+
+<Warning>
+  The PostgreSQL database used for time-series data must have the TimescaleDB extension installed.
+</Warning>
 
 ## ClickHouse
 
-Use ClickHouse when you want a separate high-throughput time-series database.
+ClickHouse can also be used as the time-series backend by setting the ClickHouse environment variables.
 
 ```bash
 TIMESERIES_BACKEND=clickhouse
@@ -43,4 +57,17 @@ CLICKHOUSE_USER=default
 CLICKHOUSE_PASSWORD=
 ```
 
-Set these environment variables for each app that reads or writes monitor history.
+<Info>
+  Set these variables for each UptimeKit app that reads or writes monitor history.
+</Info>
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `TIMESERIES_BACKEND` | Yes | Use `timescale` or `clickhouse` |
+| `DATABASE_URL` | Yes | Main PostgreSQL database URL |
+| `TIMESCALE_DATABASE_URL` | No | Optional TimescaleDB URL for time-series data |
+| `CLICKHOUSE_URL` | For ClickHouse | ClickHouse HTTP endpoint |
+| `CLICKHOUSE_USER` | For ClickHouse | ClickHouse username |
+| `CLICKHOUSE_PASSWORD` | For ClickHouse | ClickHouse password |
