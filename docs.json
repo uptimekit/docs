@@ -38,6 +38,7 @@
           {
             "group": "Features",
             "pages": [
+              "features/timeseries",
               "features/monitor-types",
               "features/monitors",
               "features/incidents"
