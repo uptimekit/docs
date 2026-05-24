@@ -1,9 +1,6 @@
 ---
-
 title: "Time-series Storage"
-
 description: "Configure TimescaleDB or ClickHouse for monitor events and uptime history."
-
 ---
 
 UptimeKit stores monitor events, status changes, and latency history in a time-series backend.
@@ -14,33 +11,24 @@ You can use either TimescaleDB or ClickHouse. Configure the backend with `TIMESE
 
 Use TimescaleDB when you want to store time-series data in PostgreSQL.
 
-\`\`\`bash
-
-TIMESERIES\_BACKEND=timescale
-
-\`\`\`
+```bash
+TIMESERIES_BACKEND=timescale
+```
 
 By default, TimescaleDB reuses the main application database from `DATABASE_URL`.
 
-\`\`\`bash
-
-DATABASE\_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
-
-TIMESERIES\_BACKEND=timescale
-
-\`\`\`
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
+TIMESERIES_BACKEND=timescale
+```
 
 You can also store time-series data in a separate TimescaleDB database by setting `TIMESCALE_DATABASE_URL`.
 
-\`\`\`bash
-
-DATABASE\_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
-
-TIMESERIES\_BACKEND=timescale
-
-TIMESCALE\_DATABASE\_URL=postgresql://postgres:postgres@localhost:5432/uptimekit\_timeseries
-
-\`\`\`
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit
+TIMESERIES_BACKEND=timescale
+TIMESCALE_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/uptimekit_timeseries
+```
 
 The PostgreSQL database used for time-series data must have the TimescaleDB extension available.
 
@@ -48,16 +36,11 @@ The PostgreSQL database used for time-series data must have the TimescaleDB exte
 
 Use ClickHouse when you want a separate high-throughput time-series database.
 
-\`\`\`bash
-
-TIMESERIES\_BACKEND=clickhouse
-
-CLICKHOUSE\_URL=[http://localhost:8123](http://localhost:8123)
-
-CLICKHOUSE\_USER=default
-
-CLICKHOUSE\_PASSWORD=
-
-\`\`\`
+```bash
+TIMESERIES_BACKEND=clickhouse
+CLICKHOUSE_URL=http://localhost:8123
+CLICKHOUSE_USER=default
+CLICKHOUSE_PASSWORD=
+```
 
 Set these environment variables for each app that reads or writes monitor history.
